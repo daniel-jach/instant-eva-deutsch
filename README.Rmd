@@ -1,0 +1,45 @@
+---
+title: "IstantEva Deutsch"
+output: github_document
+bibliography: instant-eva.bib
+---
+
+## Description
+
+* **InstantEva Deutsch** stands for *Instant Evaluation in German*.
+* Instant**Eva** Deutsch is an interactive online application for student course evaluations. 
+* **Instant**Eva Deutsch is like instant noodles: quick, easy, and all-in-one (survey, analysis, and summary). 
+* InstantEva **Deutsch** is currently only available in German. 
+* Recently, the application sometimes does not load because of connectivity problems related to the COVID-19 shutdown.
+
+A demo version of InstantEva Deutsch is available [here](https://danieljach.shinyapps.io/instant-eva-deutsch/). 
+
+The application is written in *R* [@RCT.2013] and uses *shiny* [@Chang.2020].
+
+## Usage
+
+For the **demo version** of InstantEva Deutsch, do the following: 
+
+1. Clone the repository to your local machine. 
+2. Run the script file *setupSQLite.R*.
+3. Upload the files *app.R*, *evasdatabase.db*, and *summary.Rmd* to shinyapps.io.
+
+For the **full version** of InstantEva Deutsch, a remote MySQL database is needed. Then, do the following: 
+
+1. Clone the repository to your local machine. 
+2. Run the script file *setupMySQL.R*.
+3. Go through the *app.R* script file. Comment out the code chunks that are for use with SQLite databases and uncomment the code chunks that are for use with MySQL databases.
+4. Specify the credentials of your remote MySQL database where needed (i.e. in the files *app.R* and *summary.Rmd*).
+5. Upload the files *app.R* and *summary.Rmd* to shinyapps.io.
+
+## Author  
+
+Daniel Jach <danieljach\@protonmail.com>
+
+## License and Copyright  
+
+&copy; Daniel Jach, University of Zhengzhou, China
+
+Licensed under the [MIT License](LICENSE).
+
+## References  
