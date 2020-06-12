@@ -72,7 +72,7 @@ ui <- dashboardPage(
       tabItem(tabName = "teacherInput",
               fluidRow(
                 box(title = "Anleitung", width = 12, 
-                    helpText(HTML("<b>Dies ist eine Demo. Eingegebene Daten werden gelöscht, wenn Sie InstantEva schließen (&bdquo;no persistent data storage&ldquo;), und die parallele Eingabe mehrerer Nutzer ist nicht möglich (&bdquo;no user input concurrency&ldquo;). Hierfür benötigen Sie eine Remote-Datenbank. Wie Sie Ihre Remote-Datenbank mit InstantEva verbinden, erfahren Sie hier: <a href='https://github.com/daniel-jach/instant-eva-deutsch'>https://github.com/daniel-jach/instant-eva-deutsch</a>.</b>")),
+                    helpText(HTML("<b>Dies ist eine Demo. Eingegebene Daten werden gelöscht, wenn Sie InstantEva schließen (&bdquo;no persistent data storage&ldquo;), und die parallele Eingabe mehrerer Nutzer ist nicht möglich (&bdquo;no user input concurrency&ldquo;). Hierfür benötigen Sie eine Remote-Datenbank. Wie Sie Ihre Remote-Datenbank mit InstantEva verbinden, erfahren Sie hier: <a href='https://github.com/daniel-jach/instant-eva-deutsch' target='_blank'>https://github.com/daniel-jach/instant-eva-deutsch</a>.</b>")),
                     helpText(HTML("Um Ihr Seminar anzumelden, machen Sie bitte die nötigen Angaben und drücken dann auf <i>Eingabe</i>. <b>Beachten Sie</b>: Ihre Daten werden nach sieben Tagen vollständig und unwiderruflich gelöscht."))),
                 box(title = "Grundangaben", 
                     textInput("inputName", label = "Lehrender"), 
@@ -229,7 +229,7 @@ ui <- dashboardPage(
       
       # contact
       tabItem(tabName = "contact",
-              box(HTML("Kontaktieren Sie mich gern über meine Webseite, wenn Sie Fragen, Wünsche, Anregungen oder Kritik haben.<br><br>Daniel Jach<br>Zhengzhou Universität<br>Henan, China<br><a href='https://daniel-jach.github.io/'>https://daniel-jach.github.io/</a><br><br>Den Code von InstantEva Deutsch und weitere Infos finden Sie hier:<br><a href='https://github.com/daniel-jach/instant-eva-deutsch'>https://github.com/daniel-jach/instant-eva-deutsch</a>")))
+              box(HTML("Kontaktieren Sie mich gern über meine Webseite, wenn Sie Fragen, Wünsche, Anregungen oder Kritik haben.<br><br>Daniel Jach<br>Zhengzhou Universität<br>Henan, China<br><a href='https://daniel-jach.github.io/'>https://daniel-jach.github.io/</a><br><br>Den Code von InstantEva Deutsch und weitere Infos finden Sie hier:<br><a href='https://github.com/daniel-jach/instant-eva-deutsch target='_blank''>https://github.com/daniel-jach/instant-eva-deutsch</a>")))
     )
   )
 )
