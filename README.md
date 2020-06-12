@@ -10,7 +10,7 @@ Description
 -   InstantEva **Deutsch** is currently only available in German.
 -   Recently, the application sometimes does not load because of connectivity problems related to the COVID-19 shutdown.
 
-A demo version of InstantEva Deutsch is available [here](https://danieljach.shinyapps.io/instant-eva-deutsch/).
+A demo version of InstantEva Deutsch is available <a href='https://danieljach.shinyapps.io/instant-eva-deutsch/' target='_blank'>here</a>.
 
 The application is written in *R* (R Core Team 2013) and uses *shiny* (Chang et al. 2020).
 
