@@ -592,11 +592,11 @@ server <- function(input, output) {
   
 }
 
-
-onStop(function() { # close all database connections on user exit
-  all_cons <- dbListConnections(MySQL())
-  for(con in all_cons)
-    + dbDisconnect(con)
-})
+# # Use this with remote MySQL db
+# onStop(function() { # close all database connections on user exit
+#   all_cons <- dbListConnections(MySQL())
+#   for(con in all_cons)
+#     + dbDisconnect(con)
+# })
 
 shinyApp(ui, server)
