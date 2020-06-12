@@ -29,7 +29,7 @@ For the **full version** of InstantEva Deutsch, a remote MySQL database is neede
 1. Clone the repository to your local machine. 
 2. Run the script file *setupMySQL.R*.
 3. Go through the *app.R* script file. Comment out the code chunks that are for use with SQLite databases and uncomment the code chunks that are for use with MySQL databases.
-4. Specify the credentials of your remote MySQL database where needed (i.e. in the files *app.R* and *summary.Rmd*).
+4. Specify the credentials of your remote MySQL database in the files *app.R* and *summary.Rmd*.
 5. Upload the files *app.R* and *summary.Rmd* to shinyapps.io.
 
 ## Author  
