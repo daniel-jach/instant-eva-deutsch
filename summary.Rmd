@@ -55,7 +55,7 @@ data[data == 0]<-NA # replace student zeros with NAs
 \lhead{`r entry$name`}
 \rhead{\textit{`r entry$title`}}
 \lfoot{Hergestellt mit \textbf{InstantEva Deutsch}}
-\rfoot{\url{http://danieljach.shinyapps.io/instantevadeutsch}}  
+\rfoot{\url{https://danieljach.shinyapps.io/instant-eva-deutsch/}}  
 
 # Evaluation  
 
