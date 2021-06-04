@@ -24,7 +24,7 @@ entries<-entries %>%
 dt<-data.table(matrix(ncol = 18, nrow = 0))
 
 # Write tables to database
-query<-sprintf("INSERT INTO entries VALUES('%s','%s','%s','%s','%s','%s','%s','%s')", "BeispielSeminar", "Passwort1" , "Passwort2", "2030-12-12", "Dr phil Max Mustermann", "Was heißt und zu welchem Ende studiert man Geisteswissenschaften? Eine Einführung in die Arbeitslosigkeit", "Wintersemester 2007", "Universität Mannheim", "25")
+query<-sprintf("INSERT INTO entries VALUES('%s','%s','%s','%s','%s','%s','%s','%s', '%s')", "BeispielSeminar", "Passwort1" , "Passwort2", "2030-12-12", "Dr phil Max Mustermann", "Was heißt und zu welchem Ende studiert man Geisteswissenschaften? Eine Einführung in die Arbeitslosigkeit", "Wintersemester 2007", "Universität Mannheim", "25")
 db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
 dbWriteTable(db, "entries", entries, row.names = FALSE, overwrite=TRUE)
 dbExecute(db, query)
