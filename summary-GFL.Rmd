@@ -12,11 +12,18 @@ geometry:
 fontsize: 11pt
 header-includes:
   - \usepackage{fancyhdr}
+  - \usepackage{booktabs}
+  - \usepackage{tabu}
   - \usepackage{xcolor}
   - \pagestyle{fancy}
   - \renewcommand{\footrulewidth}{0.4pt}
   - \hyphenation{Arbeits-losigkeit Unterrichts-zeit abge-stimmt}
 ---
+
+```{r setup, echo=FALSE, message=FALSE, results=FALSE}
+library(knitr)
+library(kableExtra)
+```
 
 
 ```{r, loadData, echo=FALSE, message=FALSE, results=FALSE}
@@ -29,7 +36,7 @@ header-includes:
 #   "password" = ""
 # ))
 # databaseName<-""
-# # 
+# #
 
 id<-params$n
 
@@ -38,17 +45,28 @@ queryData<-paste("SELECT * FROM", id, collapse = "")
 
 # # Use this with remote MySQL db
 # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-# # 
+# #
 
 # Use this with local SQLite db
 db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
-# 
+#
 
 entry<-dbGetQuery(db, queryEntry)
 data<-dbGetQuery(db, queryData)
 dbDisconnect(db)
 
-data[data == 0]<-NA # replace student zeros with NAs
+rmv<-vector() # if no input was changed or if SD is zero, remove this line
+
+for(i in 1:nrow(data)){
+  if(
+    !any(data[i,] == c(rep(3,14), 2, 9, 2, 3)) | sd(data[i,1:14]) == 0){
+    rmv<-append(rmv, i)
+  }
+}
+if(length(rmv) != 0){
+  data<-data[-rmv,]
+}
+data[, 1:14][data[, 1:14] == 0]<-NA # replace 0 with NA for plot data
 ```
 
 <!-- header and footer -->
@@ -63,7 +81,7 @@ data[data == 0]<-NA # replace student zeros with NAs
 
 \begin{minipage}{.85\linewidth}
 
-\textbf{Seminar} \textit{`r entry$TITLE`}  
+\textbf{Kurstitel} \textit{`r entry$TITLE`}  
 
 \smallskip
 
@@ -85,7 +103,110 @@ Evaluation angemeldet am `r format(as.Date(entry$DATE), "%d.%m.%Y")`
 
 \end{minipage}
 
-\vspace{20mm}
+\vspace{10mm}
+
+## Teilnehmende
+
+\begin{minipage}{.45\linewidth}
+Wie viele Jahre lernen Sie schon Deutsch?
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r learnYears, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"learnYears"]
+n<-length(dt[!is.na(dt)])
+mean<-round(mean(dt, na.rm = TRUE),0)
+max<-max(dt, na.rm = TRUE)
+min<-min(dt, na.rm = TRUE)
+sd<-round(sd(dt, na.rm = TRUE),0)
+dt<-data.frame(n, mean, sd, min, max)
+colnames(dt)<-c("n", "M", "SD", "Min", "Max")
+
+kable(dt, format = "latex", booktabs = TRUE) %>%
+  kable_styling(full_width = TRUE)
+```
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Ist Deutsch ein zentraler Bestandteil Ihres Studiums?
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r germanCentral, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"germanCentral"]
+n<-length(dt[!is.na(dt)])
+freq<-table(dt)
+prop<-round(prop.table(freq)*100,0)
+no<-paste(prop["2"], "%", sep = "")
+yes<-paste(prop["1"], "%", sep = "")
+kA<-paste(prop["9"], "%", sep = "")
+dt<-data.frame(n, yes, no, kA)
+dt[grep("NA", dt)]<-"0"
+colnames(dt)<-c("n", "Ja", "Nein", "k.A.")
+
+kable(dt, format = "latex", booktabs = TRUE) %>%
+  kable_styling(full_width = TRUE)
+```
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r germanImportant, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"germanImportant"]
+n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
+par(cex.axis=1.5)
+boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
+```
+\end{minipage}
+
+\smallskip
+
+\begin{minipage}{.9\linewidth}
+\begin{center}
+{\small 
+\textcolor{gray}{1 = überhaupt nicht wichtig $\leftrightarrow$ 5 = sehr wichtig}
+}
+\end{center}
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r learnWeekly, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"learnWeekly"]
+n<-length(dt[!is.na(dt)])
+mean<-round(mean(dt, na.rm = TRUE),0)
+max<-max(dt, na.rm = TRUE)
+min<-min(dt, na.rm = TRUE)
+sd<-round(sd(dt, na.rm = TRUE),0)
+dt<-data.frame(n, mean, sd, min, max)
+colnames(dt)<-c("n", "M", "SD", "Min", "Max")
+
+kable(dt, format = "latex", booktabs = TRUE) %>%
+  kable_styling(full_width = TRUE)
+```
+\end{minipage}
+
+\vfill
 
 ## Allgemein  
 
@@ -98,14 +219,14 @@ Evaluation angemeldet am `r format(as.Date(entry$DATE), "%d.%m.%Y")`
 \end{minipage}
 
 \begin{minipage}{.45\linewidth}
-Insgesamt bin ich mit dem Seminar zufrieden.
+Insgesamt bin ich mit dem Kurs zufrieden.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot1, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,1]
+```{r satisfied, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"satisfied"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -115,38 +236,19 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \bigskip
 
 \begin{minipage}{.45\linewidth}
-Insgesamt bin ich mit dem/n erworbenen Wissen und Fähigkeiten zufrieden.
+Ich würde den Kurs an Kommilitonen weiterempfehlen.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot2, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,2]
+```{r recommend, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"recommend"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
-
-\bigskip
-
-\begin{minipage}{.45\linewidth}
-Ich würde das Seminar an Kommilitonen weiterempfehlen.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot3, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,3]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-\vfill
 
 ## Lehrender  
 
@@ -159,14 +261,14 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \end{minipage}
 
 \begin{minipage}{.45\linewidth}
-Der Lehrende hat die Lernziele des Seminars eindeutig vermittelt.
+Der Lehrende ist auf Bedürfnisse und Fragen der Teilnehmenden eingegangen.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot7, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,7]
+```{r teacherResponds, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"teacherResponds"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -176,31 +278,14 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \bigskip
 
 \begin{minipage}{.45\linewidth}
-Der Lehrende ist auf Bedürfnisse, Fragen und Vorschläge der Teilnehmenden eingegangen.
+Der Lehrende hat mir bei Lernproblemen geholfen.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot8, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,8]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-\bigskip
-
-\begin{minipage}{.45\linewidth}
-Der Lehrende war bei Problemen der Teilnehmenden ansprechbar.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot9, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,9]
+```{r teacherHelps, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"teacherHelps"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -216,8 +301,8 @@ Der Lehrende hat die Unterrichtszeit sinnvoll und nachvollziehbar eingeteilt.
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot10, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,10]
+```{r teacherOrganizes, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"teacherOrganizes"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -233,36 +318,17 @@ Der Lehrende hat eine gute Arbeitsatmosphäre geschaffen.
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot11, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,11]
+```{r teacherAtmosphere, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"teacherAtmosphere"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
-
-\bigskip
-
-\begin{minipage}{.45\linewidth}
-Der Lehrende hat den Zusammenhang zwischen einzelnen Themen und dem Seminar als Ganzem verdeutlicht.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot12, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,12]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-
 
 \newpage
 
-## Seminarinhalte  
+## Kursinhalte  
 
 \begin{minipage}{.9\linewidth}
 \begin{center}
@@ -273,14 +339,14 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \end{minipage}
 
 \begin{minipage}{.45\linewidth}
-Die Seminarinhalte waren gut auf meinen Wissensstand abgestimmt.
+Der Kurs war gut auf mein Sprachniveau abgestimmt.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot13, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,13]
+```{r courseLevel, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"courseLevel"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -290,14 +356,31 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \bigskip
 
 \begin{minipage}{.45\linewidth}
-Das Seminar war inhaltlich nachvollziehbar aufgebaut.
+Der Unterricht war vielseitig und abwechslungsreich gestaltet.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot14, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,14]
+```{r courseDiverse, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"courseDiverse"]
+n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
+par(cex.axis=1.5)
+boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
+```
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Ich hatte im Unterricht genug Gelegenheit, Deutsch zu sprechen.
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r courseSpeaking, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"courseSpeaking"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -315,14 +398,14 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \end{minipage}
 
 \begin{minipage}{.45\linewidth}
-Das Seminar hat mir das Wissen und die Fähigkeiten vermittelt, mich selbstständig auf diesem Themengebiet weiterzubilden.
+Mein persönlicher Lernerfolg entspricht meinen Erwartungen.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot15, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,15]
+```{r learningSuccess, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"learningSuccess"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -332,14 +415,14 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 \bigskip
 
 \begin{minipage}{.45\linewidth}
-Das Seminar hat meine Fähigkeit verbessert, die vermittelten Inhalte kritisch zu reflektieren.
+Die eingesetzten Materialien, Arbeitsformen und Medien haben zu meinem Lernerfolg beigetragen.
 \end{minipage}
 \begin{minipage}{.05\linewidth}
 \phantom{X}
 \end{minipage}
 \begin{minipage}{.45\linewidth}
-```{r plot16, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,16]
+```{r material, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"material"]
 n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
 par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
@@ -349,108 +432,67 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 
 \vfill
 
+## Mitarbeit  
+
+\begin{minipage}{.9\linewidth}
+\begin{center}
+{\small 
+\textcolor{gray}{1 = Ich stimme überhaupt nicht zu. $\leftrightarrow$ 5 = Ich stimme voll und ganz zu.}
+}
+\end{center}
+\end{minipage}
+
+\begin{minipage}{.45\linewidth}
+Die meisten Teilnehmenden sind regelmäßig zum Kurs gekommen.
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r participantsPresent, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"participantsPresent"]
+n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
+par(cex.axis=1.5)
+boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
+```
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Die meisten Teilnehmenden haben aktiv im Kurs mitgearbeitet.
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r participantsActive, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"participantsActive"]
+n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
+par(cex.axis=1.5)
+boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
+```
+\end{minipage}
+
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Die meisten Teilnehmenden sind dem Kurs aufmerksam gefolgt.
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r participantsAttentive, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"participantsAttentive"]
+n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
+par(cex.axis=1.5)
+boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
+```
+\end{minipage}
+
+\vfill
+
 \begin{minipage}{.85\linewidth}
 \textcolor{gray}{{\small Die Ergebnisse werden in Form von Boxplots abgebildet: Die orange Box steht für die mittleren 50 Prozent der Antworten, der vertikale Strich in der Box für den Median, die umgebenden gestrichelten Elemente für die tieferen und höheren Werte. Einzelne extreme Werte werden als Punkte angezeigt.}}
 \end{minipage}
-
-## Arbeitsformen und Medien  
-
-\begin{minipage}{.9\linewidth}
-\begin{center}
-{\small 
-\textcolor{gray}{1 = Ich stimme überhaupt nicht zu. $\leftrightarrow$ 5 = Ich stimme voll und ganz zu.}
-}
-\end{center}
-\end{minipage}
-
-\begin{minipage}{.45\linewidth}
-Der Unterricht war vielseitig und abwechslungsreich gestaltet.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot17, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,17]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-\bigskip
-
-\begin{minipage}{.45\linewidth}
-Die eingesetzten Arbeitsformen und Medien haben zu meinem Verständnis und Lernerfolg beigetragen.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot18, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,18]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-## Teilnehmende  
-
-\begin{minipage}{.9\linewidth}
-\begin{center}
-{\small 
-\textcolor{gray}{1 = Ich stimme überhaupt nicht zu. $\leftrightarrow$ 5 = Ich stimme voll und ganz zu.}
-}
-\end{center}
-\end{minipage}
-
-\begin{minipage}{.45\linewidth}
-Die meisten Teilnehmenden sind regelmäßig zum Seminar gekommen.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot4, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,4]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-\bigskip
-
-\begin{minipage}{.45\linewidth}
-Die meisten Teilnehmenden haben aktiv im Seminar mitgearbeitet.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot5, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,5]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-\bigskip
-
-\begin{minipage}{.45\linewidth}
-Die meisten Teilnehmenden sind dem Seminar aufmerksam gefolgt.
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r plot6, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,6]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-

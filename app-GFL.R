@@ -13,7 +13,7 @@ library(data.table)
 #   "password" = ""
 # ))
 # databaseName<-""
-# # 
+# #
 
 # Use this to connect to your local SQLite database
 library(RSQLite)
@@ -37,7 +37,7 @@ DATE<-dbGetQuery(db, "SELECT date FROM entries")$DATE
 
 if(length(DATE) > 0){
   today<-Sys.Date()
-  tooOld<-which(today-as.Date(DATE) > 7)
+  tooOld<-which(today-as.Date(DATE) > 21)
   if(length(tooOld) > 0){
     on.exit(dbDisconnect(db))
     tooOld<-ID[tooOld]
@@ -58,8 +58,8 @@ ui <- dashboardPage(
   dashboardHeader(title = "InstantEva Deutsch"),
   
   dashboardSidebar(sidebarMenu(
-    menuItem("Lehrende", tabName = "teacherInput", icon = icon("chalkboard-teacher")),
     menuItem("Studierende", tabName = "studentInput", icon = icon("user-graduate")),
+    menuItem("Lehrende", tabName = "teacherInput", icon = icon("chalkboard-teacher")),
     menuItem("Auswertung", tabName = "output", icon = icon("chart-bar")),
     menuItem("Kontakt", tabName = "contact", icon = icon("id-card"))
   )
@@ -72,15 +72,14 @@ ui <- dashboardPage(
       tabItem(tabName = "teacherInput",
               fluidRow(
                 box(title = "Anleitung", width = 12, 
-                    helpText(HTML("<b>Dies ist eine Demo. Eingegebene Daten werden gelöscht, wenn Sie InstantEva schließen (&bdquo;no persistent data storage&ldquo;), und die parallele Eingabe mehrerer Nutzer ist nicht möglich (&bdquo;no user input concurrency&ldquo;). Hierfür benötigen Sie eine Remote-Datenbank. Wie Sie Ihre Remote-Datenbank mit InstantEva verbinden, erfahren Sie hier: <a href='https://github.com/daniel-jach/instant-eva-deutsch' target='_blank'>https://github.com/daniel-jach/instant-eva-deutsch</a>.</b>")),
-                    helpText(HTML("Um Ihr Seminar anzumelden, machen Sie bitte die nötigen Angaben und drücken dann auf <i>Eingabe</i>. <b>Beachten Sie</b>: Ihre Daten werden nach sieben Tagen vollständig und unwiderruflich gelöscht."))),
+                    helpText(HTML("Um Ihren Kurs anzumelden, machen Sie bitte die nötigen Angaben und drücken dann auf <i>Eingabe</i>. <b>Beachten Sie</b>: Ihre Daten werden nach sieben Tagen vollständig und unwiderruflich gelöscht."))),
                 box(title = "Grundangaben", 
                     textInput("inputName", label = "Lehrender"), 
-                    textInput("inputTitle", label = "Seminartitel"),
+                    textInput("inputTitle", label = "Kurstitel"),
                     textInput("inputYear", label = "Semester"),
                     textInput("inputUni", label = "Institution"),
                     numericInput("inputParticipants", label = "Anzahl der Teilnehmenden", NA, 1, 1000)),
-                box(title = "Seminar-ID und Passwörter",
+                box(title = "Kurs-ID und Passwörter",
                     helpText(HTML("Geben Sie als ID ein geeignetes Kürzel (z.B. <i>LingoIntroJena2019</i> für eine Einführung in die Linguistik in Jena im Jahr 2019), ein Passwort für Ihre Studierenden und ein Passwort für die Auswertung ein. Bitte vermeiden Sie Umlaute, Punktuation, Leer- und Sonderzeichen.")),
                     textInput("inputID", label = "ID"),
                     textInput("inputPW1", label = "Studierenden-Passwort"),
@@ -95,60 +94,66 @@ ui <- dashboardPage(
       tabItem(tabName = "studentInput",
               fluidRow(
                 box(title = "Anleitung", width = 12, 
-                    helpText(HTML("Wählen Sie das richtige Seminar aus der Dropdown-Liste aus und geben Sie das Passwort ein, das Ihnen Ihr Lehrender mitgeteilt hat. Das Passwort für das Beispielseminar lautet <i>Passwort1</i>. Wenn Ihr Seminar nicht angezeigt wird, warten Sie einige Minuten und laden Sie <i>InstantEva Deutsch</i> dann noch einmal. Geben Sie dann Ihre Einschätzung zu jeder Aussage ab, indem Sie den zugehörigen Schieberegler auf den passenden Wert einstellen. Wenn Sie keine Einschätzung abgeben möchten, wählen Sie die Frage ab, indem Sie auf das Häkchen klicken. Drücken Sie dann auf <i>Eingabe</i>."))),
+                    helpText(HTML("Wählen Sie den richtigen Kurs aus der Dropdown-Liste aus und geben Sie das Passwort ein, das Ihnen Ihr Lehrender mitgeteilt hat. Das Passwort für das Beispielkurs lautet <i>Passwort1</i>. Wenn Ihr Kurs nicht angezeigt wird, warten Sie einige Minuten und laden Sie <i>InstantEva Deutsch</i> dann noch einmal. Geben Sie dann Ihre Einschätzung zu jeder Aussage ab, indem Sie den zugehörigen Schieberegler auf den passenden Wert einstellen. Wenn Sie keine Einschätzung abgeben möchten, wählen Sie die Frage ab, indem Sie auf das Häkchen klicken. Drücken Sie dann auf <i>Eingabe</i>."))),
                 column(width = 6,
                        box(width = 12,
-                           selectInput("selectSeminarInput", "Seminar auswählen", c("", ID)),
+                           selectInput("selectSeminarInput", "Kurs auswählen", c("", ID)),
                            textInput("checkPW1", label = "Passwort")),
+                       
+                       box(title = "Persönliches", width = 12, 
+                           numericInput("learnYears", HTML("<b>Wie viele Jahre lernen Sie schon Deutsch?</b>"), 2, min = 1, max = 100, step = 0.5),
+                           radioButtons("germanCentral", HTML("<b>Ist Deutsch ein zentraler Bestandteil Ihres Studiums?</b>"), choices = c("Keine Ahnung" = "9", "Ja" = "1", "Nein" = "2")),
+                           sliderInput("germanImportant", HTML("<b>Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?</b>"), 1, 5, 3), 
+                           p(helpText(HTML("1 = überhaupt nicht wichtig &harr; 5 = sehr wichtig")), align = "center"),
+                           numericInput("learnWeekly", HTML("<b>Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?</b>"), 2, min = 1, max = 100, step = 0.5)
+                           ),
+                       
                        box(title = "Allgemein", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           checkboxInput("inputBox1", HTML("<b>Insgesamt bin ich mit dem Seminar zufrieden.</b>"), TRUE),
-                           sliderInput("inputSlider1", NULL, 1, 5, 3),
-                           checkboxInput("inputBox2", HTML("<b>Insgesamt bin ich mit dem/n erworbenen Wissen und Fähigkeiten zufrieden.</b>"), TRUE),
-                           sliderInput("inputSlider2", NULL, 1, 5, 3),
-                           checkboxInput("inputBox3", HTML("<b>Ich würde das Seminar an Kommilitonen weiterempfehlen.</b>"), TRUE),
-                           sliderInput("inputSlider3", NULL, 1, 5, 3)),
+                           checkboxInput("boxSatisfied", HTML("<b>Insgesamt bin ich mit dem Kurs zufrieden.</b>"), TRUE),
+                           sliderInput("sliderSatisfied", NULL, 1, 5, 3),
+                           checkboxInput("boxRecommend", HTML("<b>Ich würde den Kurs an Kommilitonen weiterempfehlen.</b>"), TRUE),
+                           sliderInput("sliderRecommend", NULL, 1, 5, 3)),
                        box(title = "Lehrender", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           checkboxInput("inputBox7", HTML("<b>Der Lehrende hat die Lernziele des Seminars eindeutig vermittelt.</b>"), TRUE),
-                           sliderInput("inputSlider7", NULL, 1, 5, 3),
-                           checkboxInput("inputBox8", HTML("<b>Der Lehrende ist auf Bedürfnisse, Fragen und Vorschläge der Teilnehmenden eingegangen.</b>"), TRUE),
-                           sliderInput("inputSlider8", NULL, 1, 5, 3),
-                           checkboxInput("inputBox9", HTML("<b>Der Lehrende war bei Problemen der Teilnehmenden ansprechbar.</b>"), TRUE),
-                           sliderInput("inputSlider9", NULL, 1, 5, 3),
-                           checkboxInput("inputBox10", HTML("<b>Der Lehrende hat die Unterrichtszeit sinnvoll und nachvollziehbar eingeteilt.</b>"), TRUE),
-                           sliderInput("inputSlider10", NULL, 1, 5, 3),
-                           checkboxInput("inputBox11", HTML("<b>Der Lehrende hat eine gute Arbeitsatmosphäre geschaffen.</b>"), TRUE),
-                           sliderInput("inputSlider11", NULL, 1, 5, 3),
-                           checkboxInput("inputBox12", HTML("<b>Der Lehrende hat den Zusammenhang zwischen einzelnen Themen und dem Seminar als Ganzem verdeutlicht.</b>"), TRUE),
-                           sliderInput("inputSlider12", NULL, 1, 5, 3))),
+                           checkboxInput("boxTeacherResponds", HTML("<b>Der Lehrende ist auf Bedürfnisse und Fragen der Teilnehmenden eingegangen.</b>"), TRUE),
+                           sliderInput("sliderTeacherResponds", NULL, 1, 5, 3),
+                           checkboxInput("boxTeacherHelps", HTML("<b>Der Lehrende hat mir bei Lernproblemen geholfen.</b>"), TRUE),
+                           sliderInput("sliderTeacherHelps", NULL, 1, 5, 3),
+                           checkboxInput("boxTeacherOrganizes", HTML("<b>Der Lehrende hat die Unterrichtszeit sinnvoll und nachvollziehbar eingeteilt.</b>"), TRUE),
+                           sliderInput("sliderTeacherOrganizes", NULL, 1, 5, 3),
+                           checkboxInput("boxTeacherAtmosphere", HTML("<b>Der Lehrende hat eine gute Arbeitsatmosphäre geschaffen.</b>"), TRUE),
+                           sliderInput("sliderTeacherAtmosphere", NULL, 1, 5, 3)
+                           )),
+                       
                 column(width = 6, 
-                       box(title = "Seminarinhalte", width = 12,
+                       
+                       box(title = "Kursinhalte", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           checkboxInput("inputBox13", HTML("<b>Die Seminarinhalte waren gut auf meinen Wissensstand abgestimmt.</b>"), TRUE),
-                           sliderInput("inputSlider13", NULL, 1, 5, 3),
-                           checkboxInput("inputBox14", HTML("<b>Das Seminar war inhaltlich nachvollziehbar aufgebaut.</b>"), TRUE),
-                           sliderInput("inputSlider14", NULL, 1, 5, 3)),
+                           checkboxInput("boxCourseLevel", HTML("<b>Der Kurs war gut auf mein Sprachniveau abgestimmt.</b>"), TRUE),
+                           sliderInput("sliderCourseLevel", NULL, 1, 5, 3),
+                           checkboxInput("boxCourseDiverse", HTML("<b>Der Unterricht war vielseitig und abwechslungsreich gestaltet.</b>"), TRUE),
+                           sliderInput("sliderCourseDiverse", NULL, 1, 5, 3),
+                           checkboxInput("boxCourseSpeaking", HTML("<b>Ich hatte im Unterricht genug Gelegenheit, Deutsch zu sprechen.</b>"), TRUE),
+                           sliderInput("sliderCourseSpeaking", NULL, 1, 5, 3)
+                           ),
+                       
                        box(title = "Lernerfolg", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           checkboxInput("inputBox15", HTML("<b>Das Seminar hat mir das Wissen und die Fähigkeiten vermittelt, mich selbstständig auf diesem Themengebiet weiterzubilden.</b>"), TRUE),
-                           sliderInput("inputSlider15", NULL, 1, 5, 3),
-                           checkboxInput("inputBox16", HTML("<b>Das Seminar hat meine Fähigkeit verbessert, die vermittelten Inhalte kritisch zu reflektieren.</b>"), TRUE),
-                           sliderInput("inputSlider16", NULL, 1, 5, 3)),
-                       box(title = "Arbeitsformen und Medien", width = 12,
+                           checkboxInput("boxLearningSuccess", HTML("<b>Mein persönlicher Lernerfolg entspricht meinen Erwartungen.</b>"), TRUE),
+                           sliderInput("sliderLearningSuccess", NULL, 1, 5, 3),
+                           checkboxInput("boxMaterial", HTML("<b>Die eingesetzten Materialien, Arbeitsformen und Medien haben zu meinem Lernerfolg beigetragen.</b>"), TRUE),
+                           sliderInput("sliderMaterial", NULL, 1, 5, 3)
+                           ),
+                       
+                       box(title = "Mitarbeit", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           checkboxInput("inputBox17", HTML("<b>Der Unterricht war vielseitig und abwechslungsreich gestaltet.</b>"), TRUE),
-                           sliderInput("inputSlider17", NULL, 1, 5, 3),
-                           checkboxInput("inputBox18", HTML("<b>Die eingesetzten Arbeitsformen und Medien haben zu meinem Verständnis und Lernerfolg beigetragen.</b>"), TRUE),
-                           sliderInput("inputSlider18", NULL, 1, 5, 3)),
-                       box(title = "Teilnehmende", width = 12,
-                           p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           checkboxInput("inputBox4", HTML("<b>Die meisten Teilnehmenden sind regelmäßig zum Seminar gekommen.</b>"), TRUE),
-                           sliderInput("inputSlider4", NULL, 1, 5, 3),
-                           checkboxInput("inputBox5", HTML("<b>Die meisten Teilnehmenden haben aktiv im Seminar mitgearbeitet.</b>"), TRUE),
-                           sliderInput("inputSlider5", NULL, 1, 5, 3),
-                           checkboxInput("inputBox6", HTML("<b>Die meisten Teilnehmenden sind dem Seminar aufmerksam gefolgt.</b>"), TRUE),
-                           sliderInput("inputSlider6", NULL, 1, 5, 3)),
+                           checkboxInput("boxParticipantsPresent", HTML("<b>Die meisten Teilnehmenden sind regelmäßig zum Kurs gekommen.</b>"), TRUE),
+                           sliderInput("sliderParticipantsPresent", NULL, 1, 5, 3),
+                           checkboxInput("boxParticipantsActive", HTML("<b>Die meisten Teilnehmenden haben aktiv im Kurs mitgearbeitet.</b>"), TRUE),
+                           sliderInput("sliderParticipantsActive", NULL, 1, 5, 3),
+                           checkboxInput("boxParticipantsAttentive", HTML("<b>Die meisten Teilnehmenden sind dem Kurs aufmerksam gefolgt.</b>"), TRUE),
+                           sliderInput("sliderParticipantsAttentive", NULL, 1, 5, 3)),
                        box(width = 12,
                            useShinyjs(),
                            actionButton("studentInputGo", label = "Eingabe"),
@@ -160,10 +165,10 @@ ui <- dashboardPage(
       tabItem(tabName = "output", 
               fluidRow(
                 box(title = "Anleitung", width = 12, 
-                    helpText(HTML("Wählen Sie Ihr Seminar aus der Dropdown-Liste aus und geben Sie das Passwort für die Auswertung ein. Das Passwort für das Beispielseminar lautet <i>Passwort2</i>. Wenn Ihr Seminar nicht angezeigt wird, warten Sie einige Minuten und laden Sie <i>InstantEva Deutsch</i> dann noch einmal. Drücken Sie dann auf <i>Auswertung beginnen</i>. Um eine Zusammenfassung im PDF-Format zu erzeugen, klicken Sie auf <i>Herunterladen</i>. Die Erzeugung dauert einen Moment.<br><br>Die Ergebnisse werden in Form von Boxplots abgebildet: Die orange Box steht für die mittleren 50 Prozent der Antworten, der vertikale Strich in der Box für den Median, die umgebenden gestrichelten Elemente für die tieferen und höheren Werte. Einzelne extreme Werte werden als Punkte angezeigt."))),
+                    helpText(HTML("Wählen Sie Ihr Kurs aus der Dropdown-Liste aus und geben Sie das Passwort für die Auswertung ein. Das Passwort für das Beispielkurslautet <i>Passwort2</i>. Wenn Ihr Kurs nicht angezeigt wird, warten Sie einige Minuten und laden Sie <i>InstantEva Deutsch</i> dann noch einmal. Drücken Sie dann auf <i>Auswertung beginnen</i>. Um eine Zusammenfassung im PDF-Format zu erzeugen, klicken Sie auf <i>Herunterladen</i>. Die Erzeugung dauert einen Moment.<br><br>Die Ergebnisse werden in Form von Boxplots abgebildet: Die orange Box steht für die mittleren 50 Prozent der Antworten, der vertikale Strich in der Box für den Median, die umgebenden gestrichelten Elemente für die tieferen und höheren Werte. Einzelne extreme Werte werden als Punkte angezeigt."))),
                 column(width = 6,
                        box(width = 12,
-                           selectInput("selectSeminarOutput", "Seminar auswählen", ID),
+                           selectInput("selectSeminarOutput", "Kurs auswählen", c("", ID)),
                            textInput("checkPW2", label = "Passwort"),
                            actionButton("outputGo", label = "Auswertung beginnen"),
                            br(),
@@ -171,61 +176,71 @@ ui <- dashboardPage(
                            useShinyjs(),
                            hidden(downloadButton("summary", "Herunterladen")),
                            textOutput("outputMessage")),
+                       
+                       box(title = "Teilnehmende", width = 12, 
+                           tags$b("Wie viele Jahre lernen Sie schon Deutsch?"), 
+                           tableOutput("tableLearnYears"), 
+                           tags$b("Ist Deutsch ein zentraler Bestandteil Ihres Studiums?"), 
+                           tableOutput("tableGermanCentral"), 
+                           tags$b("Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?"), 
+                           plotOutput("plotGermanImportant", height = "100px"),
+                           p(helpText(HTML("1 = überhaupt nicht wichtig &harr; 5 = sehr wichtig")), align = "center"),
+                           tags$b("Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?"), 
+                           tableOutput("tableLearnWeekly")
+                           ),
+                       
                        box(title = "Allgemein", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           tags$b("Insgesamt bin ich mit dem Seminar zufrieden."), 
-                           plotOutput("plot1", height = "100px"),
-                           tags$b("Insgesamt bin ich mit dem/n erworbenen Wissen und Fähigkeiten zufrieden."),
-                           plotOutput("plot2", height = "100px"),
-                           tags$b("Ich würde das Seminar an Kommilitonen weiterempfehlen."),
-                           plotOutput("plot3", height = "100px")
+                           tags$b("Insgesamt bin ich mit dem Kurs zufrieden."), 
+                           plotOutput("plotSatisfied", height = "100px"),
+                           tags$b("Ich würde den Kurs an Kommilitonen weiterempfehlen."),
+                           plotOutput("plotRecommend", height = "100px")
                        ),
+                       
                        box(title = "Lehrender", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           tags$b("Der Lehrende hat die Lernziele des Seminars eindeutig vermittelt."), 
-                           plotOutput("plot7", height = "100px"),
-                           tags$b("Der Lehrende ist auf Bedürfnisse, Fragen und Vorschläge der Teilnehmenden eingegangen."), 
-                           plotOutput("plot8", height = "100px"),
-                           tags$b("Der Lehrende war bei Problemen der Teilnehmenden ansprechbar."), 
-                           plotOutput("plot9", height = "100px"),
+                           tags$b("Der Lehrende ist auf Bedürfnisse und Fragen der Teilnehmenden eingegangen."), 
+                           plotOutput("plotTeacherResponds", height = "100px"),
+                           tags$b("Der Lehrende hat mir bei Lernproblemen geholfen."), 
+                           plotOutput("plotTeacherHelps", height = "100px"),
                            tags$b("Der Lehrende hat die Unterrichtszeit sinnvoll und nachvollziehbar eingeteilt."), 
-                           plotOutput("plot10", height = "100px"),
+                           plotOutput("plotTeacherOrganizes", height = "100px"),
                            tags$b("Der Lehrende hat eine gute Arbeitsatmosphäre geschaffen."), 
-                           plotOutput("plot11", height = "100px"),
-                           tags$b("Der Lehrende hat den Zusammenhang zwischen einzelnen Themen und dem Seminar als Ganzem verdeutlicht."), 
-                           plotOutput("plot12", height = "100px"))),
+                           plotOutput("plotTeacherAtmosphere", height = "100px")
+                           )
+                       ),
+                       
                 column(width = 6, 
-                       box(title = "Seminarinhalte", width = 12,
+                       box(title = "Kursinhalte", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           tags$b("Die Seminarinhalte waren gut auf meinen Wissensstand abgestimmt."), 
-                           plotOutput("plot13", height = "100px"),
-                           tags$b("Das Seminar war inhaltlich nachvollziehbar aufgebaut."), 
-                           plotOutput("plot14", height = "100px")),
+                           tags$b("Der Kurs war gut auf mein Sprachniveau abgestimmt."), 
+                           plotOutput("plotCourseLevel", height = "100px"),
+                           tags$b("Der Unterricht war vielseitig und abwechslungsreich gestaltet."), 
+                           plotOutput("plotCourseDiverse", height = "100px"),
+                           tags$b("Ich hatte im Unterricht genug Gelegenheit, Deutsch zu sprechen."), 
+                           plotOutput("plotCourseSpeaking", height = "100px")
+                       ),
+                       
                        box(title = "Lernerfolg", width = 12,
                            p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           tags$b("Das Seminar hat mir das Wissen und die Fähigkeiten vermittelt, mich selbstständig auf diesem Themengebiet weiterzubilden."), 
-                           plotOutput("plot15", height = "100px"),
-                           tags$b("Das Seminar hat meine Fähigkeit verbessert, die vermittelten Inhalte kritisch zu reflektieren."), 
-                           plotOutput("plot16", height = "100px")),
-                       box(title = "Arbeitsformen und Medien", width = 12,
-                           p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           tags$b("Der Unterricht war vielseitig und abwechslungsreich gestaltet."), 
-                           plotOutput("plot17", height = "100px"),
-                           tags$b("Die eingesetzten Arbeitsformen und Medien haben zu meinem Verständnis und Lernerfolg beigetragen."), 
-                           plotOutput("plot18", height = "100px")),
-                       box(title = "Teilnehmende", width = 12,
-                           p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
-                           tags$b("Die meisten Teilnehmenden sind regelmäßig zum Seminar gekommen."), 
-                           plotOutput("plot4", height = "100px"),
-                           tags$b("Die meisten Teilnehmenden haben aktiv im Seminar mitgearbeitet."), 
-                           plotOutput("plot5", height = "100px"),
-                           tags$b("Die meisten Teilnehmenden sind dem Seminar aufmerksam gefolgt."), 
-                           plotOutput("plot6", height = "100px"))
+                           tags$b("Mein persönlicher Lernerfolg entspricht meinen Erwartungen."), 
+                           plotOutput("plotLearningSuccess", height = "100px"),
+                           tags$b("Die eingesetzten Materialien, Arbeitsformen und Medien haben zu meinem Lernerfolg beigetragen."), 
+                           plotOutput("plotMaterial", height = "100px")
+                           ),
                        
+                       box(title = "Mitarbeit", width = 12,
+                           p(helpText(HTML("1 = Ich stimme überhaupt nicht zu. &harr; 5 = Ich stimme voll und ganz zu.")), align = "center"),
+                           tags$b("Die meisten Teilnehmenden sind regelmäßig zum Kurs gekommen."), 
+                           plotOutput("plotParticipantsPresent", height = "100px"),
+                           tags$b("Die meisten Teilnehmenden haben aktiv im Kurs mitgearbeitet."), 
+                           plotOutput("plotParticipantsActive", height = "100px"),
+                           tags$b("Die meisten Teilnehmenden sind dem Kurs aufmerksam gefolgt."), 
+                           plotOutput("plotParticipantsAttentive", height = "100px")
+                           )
+                       )
                 )
-                
-                
-              )),
+                ),
       
       # contact
       tabItem(tabName = "contact",
@@ -251,7 +266,7 @@ server <- function(input, output) {
     part<-as.character(input$inputParticipants)
     
     if(nchar(name) < 1 | nchar(title) < 1 | nchar(year) < 1 | nchar(uni) < 1 | is.na(part)){
-      return("Geben Sie bitte Ihren Namen, Seminartitel, Semester, Institution und die Anzahl der Teilnehmenden an.")
+      return("Geben Sie bitte Ihren Namen, Kurstitel, Semester, Institution und die Anzahl der Teilnehmenden an.")
     }
     else if(nchar(id) < 1){
       return("Bitte geben Sie eine ID ein.")
@@ -271,19 +286,18 @@ server <- function(input, output) {
     else{
       
       # prepare
-      entry<-list(ID=id, PW1=pw1, PW2=pw2, DATE=as.character(Sys.Date()), NAME=name, TITLE=title, YEAR=year, UNI=uni, PART=part)
-      dt<-data.table(matrix(ncol = 18, nrow = 0))
+      dt<-data.table(matrix(ncol = 18, nrow = 0, dimnames = list(c(), c("satisfied", "recommend", "teacherResponds", "teacherHelps", "teacherOrganizes", "teacherAtmosphere", "courseLevel", "courseDiverse", "courseSpeaking", "learningSuccess", "material", "participantsPresent", "participantsActive", "participantsAttentive", "learnYears", "germanCentral", "germanImportant", "learnWeekly"))))
       
-      # write new seminar to database
+      # write new course to database
       query<-sprintf("INSERT INTO entries VALUES('%s','%s','%s','%s','%s','%s','%s','%s', '%s')", id, pw1 , pw2, as.character(Sys.Date()), name, title, year, uni, part)
       
       # # Use this with remote MySQL db
       # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-      # # 
+      # #
       
       # Use this with local SQLite db
       db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
-      # 
+      #
       
       dbExecute(db, query)
       dbWriteTable(db, id, dt, row.names = FALSE) # add empty datatable
@@ -294,7 +308,7 @@ server <- function(input, output) {
       
       hide("teacherInputGo")
       
-      return("Alles klar, Ihr Seminar ist jetzt angemeldet.")
+      return("Alles klar, Ihr Kurs ist jetzt angemeldet.")
     }
   })
   
@@ -311,32 +325,35 @@ server <- function(input, output) {
     pw1<-as.character(input$checkPW1)
     
     if(nchar(id) < 1){
-      return("Bitte wählen Sie erst ein Seminar aus.")
+      return("Bitte wählen Sie erst einen Kurs aus.")
     }
     else if(pw1 != PW1[which(id == ID)]){
       return("Das eingegebene Passwort ist falsch.")
     }
     else{
       
+      # personal infos
+      personal<-c(input$learnYears, input$germanCentral, input$germanImportant, input$learnWeekly)
+      
       # input check boxes 
-      boxes<-c(input$inputBox1, input$inputBox2, input$inputBox3, input$inputBox4, input$inputBox5, input$inputBox6, input$inputBox7, input$inputBox8, input$inputBox9, input$inputBox10, input$inputBox11, input$inputBox12, input$inputBox13, input$inputBox14, input$inputBox15, input$inputBox16, input$inputBox17, input$inputBox18)
+      boxes<-c(input$boxSatisfied, input$boxRecommend, input$boxTeacherResponds, input$boxTeacherHelps, input$boxTeacherOrganizes, input$boxTeacherAtmosphere, input$boxCourseLevel, input$boxCourseDiverse, input$boxCourseSpeaking, input$boxLearningSuccess, input$boxMaterial, input$boxParticipantsPresent, input$boxParticipantsActive, input$boxParticipantsAttentive)
       
       # input sliders
-      sliders<-c(input$inputSlider1, input$inputSlider2, input$inputSlider3, input$inputSlider4, input$inputSlider5, input$inputSlider6, input$inputSlider7, input$inputSlider8, input$inputSlider9, input$inputSlider10, input$inputSlider11, input$inputSlider12, input$inputSlider13, input$inputSlider14, input$inputSlider15, input$inputSlider16, input$inputSlider17, input$inputSlider18)
+      sliders<-c(input$sliderSatisfied, input$sliderRecommend, input$sliderTeacherResponds, input$sliderTeacherHelps, input$sliderTeacherOrganizes, input$sliderTeacherAtmosphere, input$sliderCourseLevel, input$sliderCourseDiverse, input$sliderCourseSpeaking, input$sliderLearningSuccess, input$sliderMaterial, input$sliderParticipantsPresent, input$sliderParticipantsActive, input$sliderParticipantsAttentive)
       
       # replace unchecked with zero
       sliders[which(boxes == FALSE)]<-0
       
       # write input to database 
-      query<-paste("INSERT INTO", id, sprintf("VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", sliders[1],sliders[2],sliders[3],sliders[4],sliders[5],sliders[6],sliders[7],sliders[8],sliders[9],sliders[10],sliders[11],sliders[12],sliders[13],sliders[14],sliders[15],sliders[16],sliders[17],sliders[18]))
+      query<-paste("INSERT INTO", id, sprintf("VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", sliders[1],sliders[2],sliders[3],sliders[4],sliders[5],sliders[6],sliders[7],sliders[8],sliders[9],sliders[10],sliders[11],sliders[12],sliders[13],sliders[14],personal[1],personal[2],personal[3],personal[4]))
       
       # # Use this with remote MySQL db
       # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-      # # 
+      # #
       
       # Use this with local SQLite db
       db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
-      # 
+      #
       
       dbExecute(db, query)
       on.exit(dbDisconnect(db))
@@ -368,20 +385,34 @@ server <- function(input, output) {
     
     # # Use this with remote MySQL db
     # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-    # # 
+    # #
     
     # Use this with local SQLite db
     db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
-    # 
+    #
     
     data<-dbGetQuery(db, queryData)
     on.exit(dbDisconnect(db))
     
     if(pw2 == PW2[which(id == ID)]){
       if(nrow(data) > 0){
-        data[data==0]<-NA
+        
+          rmv<-vector() # if no input was changed or if SD is zero, remove this line
+          for(i in 1:nrow(data)){
+            if(
+              !any(data[i,] == c(rep(3,14), 2, 9, 2, 3)) | sd(data[i,1:14]) == 0){
+              rmv<-append(rmv, i)
+            }
+          }
+          if(length(rmv) != 0){
+            data<-data[-rmv,]
+          }
+          
+          data[, 1:14][data[, 1:14] == 0]<-NA # replace 0 with NA for plot data
       }
-      return(data)}
+      return(data)
+    }
+    
     else{
       return(NULL)
     }
@@ -393,7 +424,7 @@ server <- function(input, output) {
     if(is.null(data)){
       return(print("Das eingegebene Passwort ist falsch."))
     }else if(nrow(data) == 0){
-      return(print("Für Ihr Seminar liegen noch keine Bewertungen vor."))
+      return(print("Für Ihren Kurs liegen noch keine Bewertungen vor."))
     }else{
       shinyjs::show("summary") # trigger download button
       
@@ -410,168 +441,186 @@ server <- function(input, output) {
   
   
   # generate output
-  output$plot1<-renderPlot({
+  
+  output$plotSatisfied<-renderPlot({
     dt<-outData()
-    dt<-dt[,1]
+    dt<-dt[,"satisfied"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot2<-renderPlot({
+  output$plotRecommend<-renderPlot({
     dt<-outData()
-    dt<-dt[,2]
+    dt<-dt[,"recommend"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot3<-renderPlot({
+  output$plotTeacherResponds<-renderPlot({
     dt<-outData()
-    dt<-dt[,3]
+    dt<-dt[,"teacherResponds"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot4<-renderPlot({
+  output$plotTeacherHelps<-renderPlot({
     dt<-outData()
-    dt<-dt[,4]
+    dt<-dt[,"teacherHelps"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot5<-renderPlot({
+  output$plotTeacherOrganizes<-renderPlot({
     dt<-outData()
-    dt<-dt[,5]
+    dt<-dt[,"teacherOrganizes"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot6<-renderPlot({
+  output$plotTeacherAtmosphere<-renderPlot({
     dt<-outData()
-    dt<-dt[,6]
+    dt<-dt[,"teacherAtmosphere"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot7<-renderPlot({
+  output$plotCourseLevel<-renderPlot({
     dt<-outData()
-    dt<-dt[,7]
+    dt<-dt[,"courseLevel"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot8<-renderPlot({
+  output$plotCourseDiverse<-renderPlot({
     dt<-outData()
-    dt<-dt[,8]
+    dt<-dt[,"courseDiverse"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot9<-renderPlot({
+  output$plotCourseSpeaking<-renderPlot({
     dt<-outData()
-    dt<-dt[,9]
+    dt<-dt[,"courseSpeaking"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot10<-renderPlot({
+  output$plotLearningSuccess<-renderPlot({
     dt<-outData()
-    dt<-dt[,10]
+    dt<-dt[,"learningSuccess"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot11<-renderPlot({
+  output$plotMaterial<-renderPlot({
     dt<-outData()
-    dt<-dt[,11]
+    dt<-dt[,"material"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot12<-renderPlot({
-    dt<-outData()
-    dt<-dt[,12]
-    n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-    par(mar=c(4,1,1,1))
-    boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
-  }
-  )
-  
-  output$plot13<-renderPlot({
-    dt<-outData()
-    dt<-dt[,13]
-    n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-    par(mar=c(4,1,1,1))
-    boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
-  }
-  )
-  
-  output$plot14<-renderPlot({
-    dt<-outData()
-    dt<-dt[,14]
-    n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-    par(mar=c(4,1,1,1))
-    boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
-  }
-  )
-  
-  
-  output$plot15<-renderPlot({
+  output$plotParticipantsPresent<-renderPlot({
     dt<-outData() 
-    dt<-dt[,15]
+    dt<-dt[,"participantsPresent"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot16<-renderPlot({
+  output$plotParticipantsActive<-renderPlot({
     dt<-outData()
-    dt<-dt[,16]
+    dt<-dt[,"participantsActive"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot17<-renderPlot({
+  output$plotParticipantsAttentive<-renderPlot({
     dt<-outData()
-    dt<-dt[,17]
+    dt<-dt[,"participantsAttentive"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
   
-  output$plot18<-renderPlot({
+  output$tableLearnYears<-renderTable({
     dt<-outData()
-    dt<-dt[,18]
+    dt<-dt[,"learnYears"]
+    n<-length(dt[!is.na(dt)])
+    mean<-round(mean(dt, na.rm = TRUE),0)
+    max<-max(dt, na.rm = TRUE)
+    min<-min(dt, na.rm = TRUE)
+    sd<-round(sd(dt, na.rm = TRUE),0)
+    dt<-data.frame(n, mean, sd, min, max)
+    colnames(dt)<-c("n", "M", "SD", "Min", "Max")
+    dt
+  }
+  )
+  
+  output$tableGermanCentral<-renderTable({
+    dt<-outData()
+    dt<-dt[,"germanCentral"]
+    n<-length(dt[!is.na(dt)])
+    freq<-table(dt)
+    prop<-round(prop.table(freq)*100,0)
+    no<-paste(prop["2"], "%", sep = "")
+    yes<-paste(prop["1"], "%", sep = "")
+    kA<-paste(prop["9"], "%", sep = "")
+    dt<-data.frame(n, yes, no, kA)
+    dt[grep("NA", dt)]<-"0"
+    colnames(dt)<-c("n", "Ja", "Nein", "k.A.")
+    dt
+  }
+  )
+  
+  output$plotGermanImportant<-renderPlot({
+    dt<-outData()
+    dt<-dt[,"germanImportant"]
     n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
     par(mar=c(4,1,1,1))
     boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3)
   }
   )
+  
+  output$tableLearnWeekly<-renderTable({
+    dt<-outData()
+    dt<-dt[,"learnWeekly"]
+    n<-length(dt[!is.na(dt)])
+    mean<-round(mean(dt, na.rm = TRUE),0)
+    max<-max(dt, na.rm = TRUE)
+    min<-min(dt, na.rm = TRUE)
+    sd<-round(sd(dt, na.rm = TRUE),0)
+    dt<-data.frame(n, mean, sd, min, max)
+    colnames(dt)<-c("n", "M", "SD", "Min", "Max")
+    dt
+  }
+  )
+  
   
   # generate PDF with LaTeX
   output$summary <- downloadHandler(
@@ -582,7 +631,7 @@ server <- function(input, output) {
       
       params<-list(n = input$selectSeminarOutput)
       
-      rmarkdown::render("summary.Rmd",
+      rmarkdown::render("summary-GFL.Rmd",
                         output_file = con,
                         envir = new.env())
     }
