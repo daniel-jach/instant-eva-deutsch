@@ -31,9 +31,9 @@ Für eine **Vollversion** von InstantEva Deutsch benötigen Sie eine Remote-MySQ
 4. Tragen Sie die Anmeldedaten zu Ihrer Datenbank in *app.R* und *summary.Rmd* ein.
 5. Laden Sie *app.R* und *summary.Rmd* auf <a href='https://www.shinyapps.io/' target='_blank'>shinyapps.io</a> hoch. 
 
-## GAF-Dateien
+## GFL-Dateien
 
-Die *GAF*-Dateien enthalten einen anderen Fragebogen mit Fragen für Fremdsprachenkurse. Um diesen Fragebogen zu nutzen, führen Sie die Installationsschritte mit den *GAF*-Dateien aus.
+Die *GFL*-Dateien enthalten einen anderen Fragebogen mit Fragen für Fremdsprachenkurse. Um diesen Fragebogen zu nutzen, führen Sie die Installationsschritte mit den *GFL*-Dateien aus.
 
 
 ## Description
@@ -63,9 +63,9 @@ For the **full version** of InstantEva Deutsch, a remote MySQL database is neede
 4. Specify the credentials of your remote MySQL database in the files *app.R* and *summary.Rmd*.
 5. Upload the files *app.R* and *summary.Rmd* to <a href='https://www.shinyapps.io/' target='_blank'>shinyapps.io</a>.
 
-## GAF files
+## GFL files
 
-The *GAF* files contain another questionnaire with questions adapted to the use in German as a foreign language classrooms. To use this version, run through the setup with the *GAF* files instead.
+The *GFL* files contain another questionnaire with questions adapted to the use in German as a foreign language classrooms. To use this version, run through the setup with the *GFL* files instead.
 
 ## Author  
 

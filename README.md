@@ -43,11 +43,11 @@ Remote-MySQL-Datenbank. Anschließend führen Sie folgende Schritte aus:
     <a href='https://www.shinyapps.io/' target='_blank'>shinyapps.io</a>
     hoch.
 
-## GAF-Dateien
+## GFL-Dateien
 
-Die *GAF*-Dateien enthalten einen anderen Fragebogen mit Fragen für
+Die *GFL*-Dateien enthalten einen anderen Fragebogen mit Fragen für
 Fremdsprachenkurse. Um diesen Fragebogen zu nutzen, führen Sie die
-Installationsschritte mit den *GAF*-Dateien aus.
+Installationsschritte mit den *GFL*-Dateien aus.
 
 ## Description
 
@@ -86,11 +86,11 @@ is needed. Then, do the following:
 5.  Upload the files *app.R* and *summary.Rmd* to
     <a href='https://www.shinyapps.io/' target='_blank'>shinyapps.io</a>.
 
-## GAF files
+## GFL files
 
-The *GAF* files contain another questionnaire with questions adapted to
+The *GFL* files contain another questionnaire with questions adapted to
 the use in German as a foreign language classrooms. To use this version,
-run through the setup with the *GAF* files instead.
+run through the setup with the *GFL* files instead.
 
 ## Author
 
