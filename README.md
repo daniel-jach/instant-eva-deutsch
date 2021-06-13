@@ -14,6 +14,10 @@ IstantEva Deutsch
 Eine Demoversion von InstantEva Deutsch gibt’s
 <a href='https://danieljach.shinyapps.io/instant-eva-deutsch/' target='_blank'>hier</a>.
 
+Ein Beispiel für eine Zusammenfassung ist
+<a href='https://github.com/daniel-jach/instant-eva-deutsch/blob/master/summary.pdf' target='_blank'>hier</a>
+einsehbar.
+
 Die Anwendung ist in *R* (R Core Team 2013) geschrieben und nutzt
 *shiny* (Chang et al. 2020).
 
@@ -49,6 +53,10 @@ Die *GFL*-Dateien enthalten einen anderen Fragebogen mit Fragen für
 Fremdsprachenkurse. Um diesen Fragebogen zu nutzen, führen Sie die
 Installationsschritte mit den *GFL*-Dateien aus.
 
+Ein Beispiel für das Ergebnis ist
+<a href='https://github.com/daniel-jach/instant-eva-deutsch/blob/master/summary-GFL.pdf' target='_blank'>hier</a>
+einsehbar.
+
 ## Description
 
 -   **InstantEva Deutsch** stands for *Instant Evaluation in German*.
@@ -60,6 +68,9 @@ Installationsschritte mit den *GFL*-Dateien aus.
 
 A demo version of InstantEva Deutsch is available
 <a href='https://danieljach.shinyapps.io/instant-eva-deutsch/' target='_blank'>here</a>.
+
+An example of the summary is available
+<a href='https://github.com/daniel-jach/instant-eva-deutsch/blob/master/summary.pdf' target='_blank'>here</a>.
 
 The application is written in *R* (R Core Team 2013) and uses *shiny*
 (Chang et al. 2020).
@@ -91,6 +102,9 @@ is needed. Then, do the following:
 The *GFL* files contain another questionnaire with questions adapted to
 the use in German as a foreign language classrooms. To use this version,
 run through the setup with the *GFL* files instead.
+
+An example of the output is available
+<a href='https://github.com/daniel-jach/instant-eva-deutsch/blob/master/summary-GFL.pdf' target='_blank'>here</a>.
 
 ## Author
 
