@@ -7,7 +7,7 @@ classoption:
 - a4paper
 documentclass: article
 geometry: 
-- "left=15mm,right=15mm,top=2cm,bottom=2cm"
+- margin=25mm
 - headheight=13.6pt
 fontsize: 11pt
 header-includes:
@@ -45,7 +45,7 @@ queryData<-paste("SELECT * FROM", id, collapse = "")
 
 # # Use this with remote MySQL db
 # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-#
+# #
 
 # Use this with local SQLite db
 db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
@@ -129,7 +129,7 @@ kable(dt, format = "latex", booktabs = TRUE) %>%
 ```
 \end{minipage}
 
-\medskip
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Ist Deutsch ein zentraler Bestandteil Ihres Studiums?
@@ -155,7 +155,34 @@ kable(dt, format = "latex", booktabs = TRUE) %>%
 ```
 \end{minipage}
 
-\medskip
+\bigskip
+
+\begin{minipage}{.45\linewidth}
+Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?
+\end{minipage}
+\begin{minipage}{.05\linewidth}
+\phantom{X}
+\end{minipage}
+\begin{minipage}{.45\linewidth}
+```{r germanImportant, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
+dt<-data[,"germanImportant"]
+n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
+par(cex.axis=1.5)
+boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
+```
+\end{minipage}
+
+\smallskip
+
+\begin{minipage}{.9\linewidth}
+\begin{center}
+{\small 
+\textcolor{gray}{1 = überhaupt nicht wichtig $\leftrightarrow$ 5 = sehr wichtig}
+}
+\end{center}
+\end{minipage}
+
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?
@@ -179,30 +206,7 @@ kable(dt, format = "latex", booktabs = TRUE) %>%
 ```
 \end{minipage}
 
-\begin{minipage}{.45\linewidth}
-Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?
-\end{minipage}
-\begin{minipage}{.05\linewidth}
-\phantom{X}
-\end{minipage}
-\begin{minipage}{.45\linewidth}
-```{r germanImportant, fig.height=2.5, fig.align="left", echo=FALSE, message=FALSE}
-dt<-data[,"germanImportant"]
-n<-paste("n = ", length(dt[!is.na(dt)]), sep = "")
-par(cex.axis=1.5)
-boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
-```
-\end{minipage}
-
-\vspace{-5mm}
-
-\begin{minipage}{.9\linewidth}
-\begin{center}
-{\small 
-\textcolor{gray}{1 = überhaupt nicht wichtig $\leftrightarrow$ 5 = sehr wichtig}
-}
-\end{center}
-\end{minipage}
+\vfill
 
 ## Allgemein  
 
@@ -229,7 +233,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Ich würde den Kurs an Kommilitonen weiterempfehlen.
@@ -245,8 +249,6 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
-
-\vspace{-5mm}
 
 ## Lehrender  
 
@@ -273,7 +275,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Der Lehrende hat mir bei Lernproblemen geholfen.
@@ -290,7 +292,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Der Lehrende hat die Unterrichtszeit sinnvoll und nachvollziehbar eingeteilt.
@@ -307,7 +309,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Der Lehrende hat eine gute Arbeitsatmosphäre geschaffen.
@@ -351,7 +353,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Der Unterricht war vielseitig und abwechslungsreich gestaltet.
@@ -368,7 +370,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Ich hatte im Unterricht genug Gelegenheit, Deutsch zu sprechen.
@@ -384,8 +386,6 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
-
-\vspace{-5mm}
 
 ## Lernerfolg   
 
@@ -412,7 +412,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Die eingesetzten Materialien, Arbeitsformen und Medien haben zu meinem Lernerfolg beigetragen.
@@ -428,6 +428,7 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
 
 \vfill
 
@@ -456,7 +457,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Die meisten Teilnehmenden haben aktiv im Kurs mitgearbeitet.
@@ -473,7 +474,7 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
-\vspace{-5mm}
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Die meisten Teilnehmenden sind dem Kurs aufmerksam gefolgt.

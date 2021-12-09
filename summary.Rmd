@@ -7,7 +7,7 @@ classoption:
 - a4paper
 documentclass: article
 geometry: 
-- "left=15mm,right=15mm,top=20mm,bottom=20mm"
+- margin=25mm
 - headheight=13.6pt
 fontsize: 11pt
 header-includes:
@@ -16,8 +16,8 @@ header-includes:
   - \pagestyle{fancy}
   - \renewcommand{\footrulewidth}{0.4pt}
   - \hyphenation{Arbeits-losigkeit Unterrichts-zeit abge-stimmt}
-  - \usepackage{tcolorbox}
 ---
+
 
 ```{r, loadData, echo=FALSE, message=FALSE, results=FALSE}
 # # Use this with remote MySQL database
@@ -29,7 +29,7 @@ header-includes:
 #   "password" = ""
 # ))
 # databaseName<-""
-# #
+# # 
 
 id<-params$n
 
@@ -38,11 +38,11 @@ queryData<-paste("SELECT * FROM", id, collapse = "")
 
 # # Use this with remote MySQL db
 # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-#
+# # 
 
 # Use this with local SQLite db
 db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
-#
+# 
 
 entry<-dbGetQuery(db, queryEntry)
 data<-dbGetQuery(db, queryData)
@@ -112,6 +112,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Insgesamt bin ich mit dem/n erworbenen Wissen und Fähigkeiten zufrieden.
 \end{minipage}
@@ -127,6 +129,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Ich würde das Seminar an Kommilitonen weiterempfehlen.
 \end{minipage}
@@ -141,6 +145,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+\vfill
 
 ## Lehrender  
 
@@ -167,6 +173,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Der Lehrende ist auf Bedürfnisse, Fragen und Vorschläge der Teilnehmenden eingegangen.
 \end{minipage}
@@ -181,6 +189,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Der Lehrende war bei Problemen der Teilnehmenden ansprechbar.
@@ -197,6 +207,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Der Lehrende hat die Unterrichtszeit sinnvoll und nachvollziehbar eingeteilt.
 \end{minipage}
@@ -211,6 +223,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Der Lehrende hat eine gute Arbeitsatmosphäre geschaffen.
@@ -227,6 +241,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Der Lehrende hat den Zusammenhang zwischen einzelnen Themen und dem Seminar als Ganzem verdeutlicht.
 \end{minipage}
@@ -241,6 +257,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+
 
 \newpage
 
@@ -268,6 +286,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Das Seminar war inhaltlich nachvollziehbar aufgebaut.
@@ -308,6 +328,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Das Seminar hat meine Fähigkeit verbessert, die vermittelten Inhalte kritisch zu reflektieren.
@@ -356,6 +378,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Die eingesetzten Arbeitsformen und Medien haben zu meinem Verständnis und Lernerfolg beigetragen.
 \end{minipage}
@@ -396,6 +420,8 @@ boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, fram
 ```
 \end{minipage}
 
+\bigskip
+
 \begin{minipage}{.45\linewidth}
 Die meisten Teilnehmenden haben aktiv im Seminar mitgearbeitet.
 \end{minipage}
@@ -410,6 +436,8 @@ par(cex.axis=1.5)
 boxplot(dt, horizontal = TRUE, ylim = c(1,5), col = "orange", boxwex = .75, frame = FALSE); mtext(n,3, cex = 1.5)
 ```
 \end{minipage}
+
+\bigskip
 
 \begin{minipage}{.45\linewidth}
 Die meisten Teilnehmenden sind dem Seminar aufmerksam gefolgt.
