@@ -30,10 +30,10 @@ Sys.chmod("./evasdatabase.db", mode = "777", use_umask = TRUE)
 db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
 #
 
-ID<-dbGetQuery(db, "SELECT id FROM entries")$ID
-PW1<-dbGetQuery(db, "SELECT pw1 FROM entries")$PW1
-PW2<-dbGetQuery(db, "SELECT pw2 FROM entries")$PW2
-DATE<-dbGetQuery(db, "SELECT date FROM entries")$DATE
+ID<-dbGetQuery(db, "SELECT id FROM entries")[,1]
+PW1<-dbGetQuery(db, "SELECT pw1 FROM entries")[,1]
+PW2<-dbGetQuery(db, "SELECT pw2 FROM entries")[,1]
+DATE<-dbGetQuery(db, "SELECT date FROM entries")[,1]
 
 if(length(DATE) > 0){
   today<-Sys.Date()
@@ -229,7 +229,7 @@ ui <- dashboardPage(
       
       # contact
       tabItem(tabName = "contact",
-              box(HTML("Kontaktieren Sie mich gern über meine Webseite, wenn Sie Fragen, Wünsche, Anregungen oder Kritik haben.<br><br>Daniel Jach<br>Shanghai Normal University<br>Shanghai, China<br><a href='https://daniel-jach.github.io/'>https://daniel-jach.github.io/</a><br><br>Den Code von InstantEva Deutsch und weitere Infos finden Sie hier:<br><a href='https://github.com/daniel-jach/instant-eva-deutsch' target='_blank'>https://github.com/daniel-jach/instant-eva-deutsch</a>")))
+              box(HTML("Kontaktieren Sie mich gern über meine Webseite, wenn Sie Fragen, Wünsche, Anregungen oder Kritik haben.<br><br>Dr. Daniel Jach<br>Südwest Jiaotong Universität<br>Chengdu, China<br><a href='https://daniel-jach.github.io/'>https://daniel-jach.github.io/</a><br><br>Den Code von InstantEva Deutsch und weitere Infos finden Sie hier:<br><a href='https://github.com/daniel-jach/instant-eva-deutsch' target='_blank'>https://github.com/daniel-jach/instant-eva-deutsch</a>")))
     )
   )
 )

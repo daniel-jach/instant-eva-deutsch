@@ -30,14 +30,14 @@ Sys.chmod("./evasdatabase.db", mode = "777", use_umask = TRUE)
 db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
 #
 
-ID<-dbGetQuery(db, "SELECT id FROM entries")$ID
-PW1<-dbGetQuery(db, "SELECT pw1 FROM entries")$PW1
-PW2<-dbGetQuery(db, "SELECT pw2 FROM entries")$PW2
-DATE<-dbGetQuery(db, "SELECT date FROM entries")$DATE
+ID<-dbGetQuery(db, "SELECT id FROM entries")[,1]
+PW1<-dbGetQuery(db, "SELECT pw1 FROM entries")[,1]
+PW2<-dbGetQuery(db, "SELECT pw2 FROM entries")[,1]
+DATE<-dbGetQuery(db, "SELECT date FROM entries")[,1]
 
 if(length(DATE) > 0){
   today<-Sys.Date()
-  tooOld<-which(today-as.Date(DATE) > 21)
+  tooOld<-which(today-as.Date(DATE) > 7)
   if(length(tooOld) > 0){
     on.exit(dbDisconnect(db))
     tooOld<-ID[tooOld]
@@ -103,9 +103,9 @@ ui <- dashboardPage(
                        box(title = "Persönliches", width = 12, 
                            numericInput("learnYears", HTML("<b>Wie viele Jahre lernen Sie schon Deutsch?</b>"), 2, min = 1, max = 100, step = 0.5),
                            radioButtons("germanCentral", HTML("<b>Ist Deutsch ein zentraler Bestandteil Ihres Studiums?</b>"), choices = c("Keine Ahnung" = "9", "Ja" = "1", "Nein" = "2")),
+                           numericInput("learnWeekly", HTML("<b>Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?</b>"), 2, min = 1, max = 100, step = 0.5),
                            sliderInput("germanImportant", HTML("<b>Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?</b>"), 1, 5, 3), 
-                           p(helpText(HTML("1 = überhaupt nicht wichtig &harr; 5 = sehr wichtig")), align = "center"),
-                           numericInput("learnWeekly", HTML("<b>Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?</b>"), 2, min = 1, max = 100, step = 0.5)
+                           p(helpText(HTML("1 = überhaupt nicht wichtig &harr; 5 = sehr wichtig")), align = "center")
                            ),
                        
                        box(title = "Allgemein", width = 12,
@@ -182,11 +182,11 @@ ui <- dashboardPage(
                            tableOutput("tableLearnYears"), 
                            tags$b("Ist Deutsch ein zentraler Bestandteil Ihres Studiums?"), 
                            tableOutput("tableGermanCentral"), 
+                           tags$b("Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?"), 
+                           tableOutput("tableLearnWeekly"),
                            tags$b("Wie wichtig ist es Ihnen persönlich, Deutsch zu lernen?"), 
                            plotOutput("plotGermanImportant", height = "100px"),
-                           p(helpText(HTML("1 = überhaupt nicht wichtig &harr; 5 = sehr wichtig")), align = "center"),
-                           tags$b("Wie viele Stunden lernen Sie Deutsch vor und nach dem Unterricht insgesamt jede Woche?"), 
-                           tableOutput("tableLearnWeekly")
+                           p(helpText(HTML("1 = überhaupt nicht wichtig &harr; 5 = sehr wichtig")), align = "center")
                            ),
                        
                        box(title = "Allgemein", width = 12,
@@ -244,7 +244,7 @@ ui <- dashboardPage(
       
       # contact
       tabItem(tabName = "contact",
-              box(HTML("Kontaktieren Sie mich gern über meine Webseite, wenn Sie Fragen, Wünsche, Anregungen oder Kritik haben.<br><br>Daniel Jach<br>Shanghai Normal University<br>Shanghai, China<br><a href='https://daniel-jach.github.io/'>https://daniel-jach.github.io/</a><br><br>Den Code von InstantEva Deutsch und weitere Infos finden Sie hier:<br><a href='https://github.com/daniel-jach/instant-eva-deutsch' target='_blank'>https://github.com/daniel-jach/instant-eva-deutsch</a>")))
+              box(HTML("Kontaktieren Sie mich gern über meine Webseite, wenn Sie Fragen, Wünsche, Anregungen oder Kritik haben.<br><br>Dr. Daniel Jach<br>Südwest Jiaotong Universität<br>Chengdu, China<br><a href='https://daniel-jach.github.io/'>https://daniel-jach.github.io/</a><br><br>Den Code von InstantEva Deutsch und weitere Infos finden Sie hier:<br><a href='https://github.com/daniel-jach/instant-eva-deutsch' target='_blank'>https://github.com/daniel-jach/instant-eva-deutsch</a>")))
     )
   )
 )
