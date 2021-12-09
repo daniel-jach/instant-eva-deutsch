@@ -75,14 +75,13 @@ The *GFL* files contain another questionnaire with questions adapted to the use 
 
 An example of the output is available <a href='https://github.com/daniel-jach/instant-eva-deutsch/blob/master/summary-GFL.pdf' target='_blank'>here</a>.
 
-
 ## Author  
 
 Daniel Jach <danieljach\@protonmail.com>
 
 ## License and Copyright  
 
-&copy; Daniel Jach, University of Zhengzhou, China
+&copy; Daniel Jach, Southwest Jiaotong University, Chengdu, China
 
 Licensed under the [MIT License](LICENSE).
 

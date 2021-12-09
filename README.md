@@ -112,7 +112,7 @@ Daniel Jach &lt;danieljach@protonmail.com&gt;
 
 ## License and Copyright
 
-© Daniel Jach, University of Zhengzhou, China
+© Daniel Jach, Southwest Jiaotong University, Chengdu, China
 
 Licensed under the [MIT License](LICENSE).
 
