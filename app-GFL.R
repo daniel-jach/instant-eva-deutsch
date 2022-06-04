@@ -2,6 +2,8 @@ library(shiny)
 library(shinydashboard)
 library(shinyjs)
 library(data.table)
+library(RMySQL)
+
 
 # # Use this to connect to your remote MySQL database
 # library(RMySQL)
