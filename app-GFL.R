@@ -397,16 +397,17 @@ server <- function(input, output) {
     if(pw2 == PW2[which(id == ID)]){
       if(nrow(data) > 0){
         
-          rmv<-vector() # if no input was changed or if SD is zero, remove this line
-          for(i in 1:nrow(data)){
-            if(
-              !any(data[i,] == c(rep(3,14), 2, 9, 2, 3)) | sd(data[i,1:14]) == 0){
-              rmv<-append(rmv, i)
-            }
-          }
-          if(length(rmv) != 0){
-            data<-data[-rmv,]
-          }
+          # # to remove dishonest answers and freeriders
+          # rmv<-vector() # if no input was changed or if SD is zero, remove this line
+          # for(i in 1:nrow(data)){
+          #   if(
+          #     !any(data[i,] == c(rep(3,14), 2, 9, 2, 3)) | sd(data[i,1:14]) == 0){
+          #     rmv<-append(rmv, i)
+          #   }
+          # }
+          # if(length(rmv) != 0){
+          #   data<-data[-rmv,]
+          # }
           
           data[, 1:14][data[, 1:14] == 0]<-NA # replace 0 with NA for plot data
       }
