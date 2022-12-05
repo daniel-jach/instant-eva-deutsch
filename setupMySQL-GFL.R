@@ -4,7 +4,6 @@ library(RMySQL)
 library(data.table)
 library(dplyr)
 
-# Specify the credentials of your database
 options(mysql = list(
   "host" = "",
   "port" = ,
@@ -12,6 +11,7 @@ options(mysql = list(
   "password" = ""
 ))
 databaseName<-""
+#
 
 
 # access database

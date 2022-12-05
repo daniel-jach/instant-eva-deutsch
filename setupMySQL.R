@@ -4,7 +4,7 @@ library(RMySQL)
 library(data.table)
 library(dplyr)
 
-# Specify the credentials of your database
+# Specify the credential sof your remote MySQL database
 options(mysql = list(
   "host" = "",
   "port" = ,
@@ -12,6 +12,7 @@ options(mysql = list(
   "password" = ""
 ))
 databaseName<-""
+#
 
 
 

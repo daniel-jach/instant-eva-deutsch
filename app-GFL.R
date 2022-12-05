@@ -3,32 +3,31 @@ library(shinydashboard)
 library(shinyjs)
 library(data.table)
 
-# # Use this to connect to your remote MySQL database
-# library(RMySQL)
-# # Specify the credential sof your remote MySQL database
-# options(mysql = list(
-#   "host" = "",
-#   "port" = ,
-#   "user" = "",
-#   "password" = ""
-# ))
-# databaseName<-""
-# #
-
-# Use this to connect to your local SQLite database
-library(RSQLite)
+# Use this to connect to your remote MySQL database
+library(RMySQL)
+options(mysql = list(
+  "host" = "",
+  "port" = ,
+  "user" = "",
+  "password" = ""
+))
+databaseName<-""
 #
+
+# # Use this to connect to your local SQLite database
+# library(RSQLite)
+# #
 
 ### Connect to database and retrieve entries
 
-# # Use this with remote MySQL db
-# db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-# #
-
-# Use this with local SQLite db
-Sys.chmod("./evasdatabase.db", mode = "777", use_umask = TRUE)
-db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+# Use this with remote MySQL db
+db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
 #
+
+# # Use this with local SQLite db
+# Sys.chmod("./evasdatabase.db", mode = "777", use_umask = TRUE)
+# db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+# #
 
 ID<-dbGetQuery(db, "SELECT id FROM entries")[,1]
 PW1<-dbGetQuery(db, "SELECT pw1 FROM entries")[,1]
@@ -291,20 +290,20 @@ server <- function(input, output) {
       # write new course to database
       query<-sprintf("INSERT INTO entries VALUES('%s','%s','%s','%s','%s','%s','%s','%s', '%s')", id, pw1 , pw2, as.character(Sys.Date()), name, title, year, uni, part)
       
-      # # Use this with remote MySQL db
-      # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-      # #
-      
-      # Use this with local SQLite db
-      db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+      # Use this with remote MySQL db
+      db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
       #
+      
+      # # Use this with local SQLite db
+      # db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+      # #
       
       dbExecute(db, query)
       dbWriteTable(db, id, dt, row.names = FALSE) # add empty datatable
       
       on.exit(dbDisconnect(db))
       
-      # disable student submit button after successful submission
+      # disable teacher submit button after successful submission
       
       hide("teacherInputGo")
       
@@ -347,13 +346,13 @@ server <- function(input, output) {
       # write input to database 
       query<-paste("INSERT INTO", id, sprintf("VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')", sliders[1],sliders[2],sliders[3],sliders[4],sliders[5],sliders[6],sliders[7],sliders[8],sliders[9],sliders[10],sliders[11],sliders[12],sliders[13],sliders[14],personal[1],personal[2],personal[3],personal[4]))
       
-      # # Use this with remote MySQL db
-      # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-      # #
-      
-      # Use this with local SQLite db
-      db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+      # Use this with remote MySQL db
+      db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
       #
+      
+      # # Use this with local SQLite db
+      # db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+      # #
       
       dbExecute(db, query)
       on.exit(dbDisconnect(db))
@@ -383,13 +382,13 @@ server <- function(input, output) {
     # load database
     queryData<-paste("SELECT * FROM", id, collapse = "")
     
-    # # Use this with remote MySQL db
-    # db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
-    # #
-    
-    # Use this with local SQLite db
-    db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+    # Use this with remote MySQL db
+    db<-dbConnect(RMySQL::MySQL(), dbname = databaseName, host = options()$mysql$host, port = options()$mysql$port, user = options()$mysql$user, password = options()$mysql$password)
     #
+    
+    # # Use this with local SQLite db
+    # db<-dbConnect(RSQLite::SQLite(), "evasdatabase.db")
+    # #
     
     data<-dbGetQuery(db, queryData)
     on.exit(dbDisconnect(db))
@@ -642,11 +641,11 @@ server <- function(input, output) {
   
 }
 
-# # Use this with remote MySQL db
-# onStop(function() { # close all database connections on user exit
-#   all_cons <- dbListConnections(MySQL())
-#   for(con in all_cons)
-#     + dbDisconnect(con)
-# })
+# Use this with remote MySQL db
+onStop(function() { # close all database connections on user exit
+  all_cons <- dbListConnections(MySQL())
+  for(con in all_cons)
+    + dbDisconnect(con)
+})
 
 shinyApp(ui, server)
