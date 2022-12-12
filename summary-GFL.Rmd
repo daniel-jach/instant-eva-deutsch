@@ -17,7 +17,7 @@ header-includes:
   - \usepackage{xcolor}
   - \pagestyle{fancy}
   - \renewcommand{\footrulewidth}{0.4pt}
-  - \hyphenation{Arbeits-losigkeit Unterrichts-zeit abge-stimmt}
+  - \hyphenation{Arbeits-losigkeit Unterrichts-zeit abge-stimmt ent-spricht Sprach-niveau Teil-neh-men-den ge-nug Ge-le-gen-heit hab-en}
 ---
 
 ```{r setup, echo=FALSE, message=FALSE, results=FALSE}
@@ -67,9 +67,6 @@ dbDisconnect(db)
 # if(length(rmv) != 0){
 #   data<-data[-rmv,]
 # }
-
-library(dplyr)
-data<-data %>% distinct()
 
 data[, 1:14][data[, 1:14] == 0]<-NA # replace 0 with NA for plot data
 ```
